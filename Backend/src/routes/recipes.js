@@ -50,9 +50,12 @@ router.post("/", verifyToken, async (req, res) => {
 router.get("/:recipeId", async (req, res) => {
   try {
     const result = await RecipesModel.findById(req.params.recipeId);
+    if (!result) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
     res.status(200).json(result);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({  message: "Error fetching recipe"});
   }
 });
 
@@ -68,6 +71,30 @@ router.put("/", async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+router.put("/removeSaved", async (req, res) => {
+  const { recipeID, userID } = req.body;
+
+  try {
+    const user = await UserModel.findById(userID);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.savedRecipes = user.savedRecipes.filter(
+      (id) => id.toString() !== recipeID
+    );
+
+    await user.save();
+
+    res.status(200).json({ savedRecipes: user.savedRecipes });
+  } catch (err) {
+    res.status(500).json({ message: "Error removing recipe" });
+  }
+});
+
+
 
 // Get id of saved recipes
 router.get("/savedRecipes/ids/:userId", async (req, res) => {

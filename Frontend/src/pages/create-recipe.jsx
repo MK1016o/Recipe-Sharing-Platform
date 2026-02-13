@@ -6,7 +6,7 @@ import { useCookies } from "react-cookie";
 
 export const CreateRecipe = () => {
   const userID = useGetUserID();
-  const [cookies, _] = useCookies(["access_token"]);
+  const [cookies] = useCookies(["access_token"]);
   const [recipe, setRecipe] = useState({
     name: "",
     description: "",
@@ -25,136 +25,152 @@ export const CreateRecipe = () => {
   };
 
   const handleIngredientChange = (event, index) => {
-    const { value } = event.target;
     const ingredients = [...recipe.ingredients];
-    ingredients[index] = value;
+    ingredients[index] = event.target.value;
     setRecipe({ ...recipe, ingredients });
   };
 
   const handleAddIngredient = () => {
-    const ingredients = [...recipe.ingredients, ""];
-    setRecipe({ ...recipe, ingredients });
+    setRecipe({ ...recipe, ingredients: [...recipe.ingredients, ""] });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       await axios.post(
-        "https://localhost:3000/recipes",
-        { ...recipe },
+        "http://localhost:3000/recipes",
+        recipe,
         {
           headers: { authorization: cookies.access_token },
         }
       );
-
-      alert("Recipe Created");
+      alert("Recipe created successfully!");
       navigate("/");
     } catch (error) {
-      console.error(error);
+      alert("Failed to create recipe. Please try login and try again.");
+      navigate("/auth");
     }
   };
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen">
-      <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Create Recipe</h2>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-rose-100 py-10 px-4">
+      <h2 className="text-4xl font-bold text-center text-orange-500 mb-8">
+        🍳 Create a New Recipe
+      </h2>
+
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-lg max-w-3xl mx-auto space-y-6 border-4 border-green-400"
+        className="bg-white max-w-3xl mx-auto p-8 rounded-3xl shadow-xl space-y-6"
       >
+        {/* Recipe Name */}
         <div>
-          <label htmlFor="name" className="block text-lg font-medium text-gray-700">Name</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">
+            Recipe Name
+          </label>
           <input
             type="text"
-            id="name"
             name="name"
             value={recipe.name}
             onChange={handleChange}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-orange-400 focus:outline-none"
             required
           />
         </div>
 
+        {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-lg font-medium text-gray-700">Description</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">
+            Short Description
+          </label>
           <textarea
-            id="description"
             name="description"
             value={recipe.description}
             onChange={handleChange}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            rows="4"
+            rows="3"
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-orange-400 focus:outline-none"
             required
-          ></textarea>
+          />
         </div>
 
+        {/* Ingredients */}
         <div>
-          <label htmlFor="ingredients" className="block text-lg font-medium text-gray-700">Ingredients</label>
+          <label className="block text-sm font-medium text-slate-600 mb-2">
+            Ingredients
+          </label>
+
           {recipe.ingredients.map((ingredient, index) => (
-            <div key={index} className="flex items-center mb-4">
-              <input
-                type="text"
-                name="ingredients"
-                value={ingredient}
-                onChange={(event) => handleIngredientChange(event, index)}
-                className="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                required
-              />
-            </div>
+            <input
+              key={index}
+              type="text"
+              value={ingredient}
+              onChange={(e) => handleIngredientChange(e, index)}
+              className="w-full mb-3 px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-orange-400 focus:outline-none"
+              placeholder={`Ingredient ${index + 1}`}
+              required
+            />
           ))}
+
           <button
             type="button"
             onClick={handleAddIngredient}
-            className="text-blue-600 hover:underline"
+            className="text-orange-500 font-medium hover:underline"
           >
-            Add Ingredient
+            + Add Ingredient
           </button>
         </div>
 
+        {/* Instructions */}
         <div>
-          <label htmlFor="instructions" className="block text-lg font-medium text-gray-700">Instructions</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">
+            Cooking Instructions
+          </label>
           <textarea
-            id="instructions"
             name="instructions"
             value={recipe.instructions}
             onChange={handleChange}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             rows="4"
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-orange-400 focus:outline-none"
             required
-          ></textarea>
+          />
         </div>
 
+        {/* Image URL */}
         <div>
-          <label htmlFor="imageUrl" className="block text-lg font-medium text-gray-700">Image URL</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">
+            Image URL
+          </label>
           <input
             type="text"
-            id="imageUrl"
             name="imageUrl"
             value={recipe.imageUrl}
             onChange={handleChange}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-orange-400 focus:outline-none"
             required
           />
         </div>
 
+        {/* Cooking Time */}
         <div>
-          <label htmlFor="cookingTime" className="block text-lg font-medium text-gray-700">Cooking Time (minutes)</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1">
+            Cooking Time (minutes)
+          </label>
           <input
             type="number"
-            id="cookingTime"
             name="cookingTime"
             value={recipe.cookingTime}
             onChange={handleChange}
-            className="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-orange-400 focus:outline-none"
             required
           />
         </div>
 
-        <div className="flex justify-center">
+        {/* Submit */}
+        <div className="text-center pt-4">
           <button
             type="submit"
-            className="px-6 py-3 bg-blue-600 border-b-4 border-r-4 border-gray-800 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none"
+            className="bg-orange-500 text-white px-8 py-3 rounded-full font-medium hover:bg-orange-600 transition shadow-md"
           >
-            Create Recipe
+            Publish Recipe
           </button>
         </div>
       </form>

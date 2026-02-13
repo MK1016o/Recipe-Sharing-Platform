@@ -13,40 +13,55 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-900 p-4 shadow-lg">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+    <nav className="bg-white p-2 shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        
+        {/* Logo / Brand */}
+        <Link to="/" className="text-3xl font-bold text-orange-500">
+          🍳 RecipeShare
+        </Link>
+
         {/* Nav Links */}
-        <div className="space-x-8 flex items-center text-white">
-          <Link to="/" className="text-lg font-semibold hover:text-blue-300">
+        <div className="hidden md:flex items-center gap-8 text-slate-700 font-medium text-lg">
+          <Link
+            to="/"
+            className="hover:text-orange-500 transition"
+          >
             Home
           </Link>
+
           <Link
             to="/create-recipe"
-            className="text-lg font-semibold hover:text-blue-300"
+            className="hover:text-orange-500 transition"
           >
             Create Recipe
           </Link>
-          <Link
+
+          {cookies.access_token ? (
+            <Link
             to="/saved-recipes"
-            className="text-lg font-semibold hover:text-blue-300"
+            className="hover:text-orange-500 transition"
           >
             Saved Recipes
           </Link>
+          ) : (
+            <div></div>
+          )}
         </div>
 
         {/* Auth Button */}
-        <div className="flex items-center space-x-4">
+        <div>
           {!cookies.access_token ? (
             <Link
               to="/auth"
-              className="text-white px-4 py-2 bg-blue-600 rounded-md hover:bg-blue-500 transition-all"
+              className="bg-orange-500 text-white px-5 py-2 rounded-full hover:bg-orange-600 transition font-medium"
             >
-              Login/Register
+              Login
             </Link>
           ) : (
             <button
               onClick={logout}
-              className="text-white px-4 py-2 bg-red-600 rounded-md hover:bg-red-500 transition-all"
+              className="bg-red-500 text-white px-5 py-2 rounded-full hover:bg-red-600 transition font-medium"
             >
               Logout
             </button>
